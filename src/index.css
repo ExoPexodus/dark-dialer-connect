@@ -5,11 +5,11 @@
 
 @layer base {
   :root {
-    --background: 183 83% 9%; /* Deep Cyan Background */
+    --background: 190 83% 9%; /* Deep Cyan Background */
     --foreground: 180 10% 98%; /* Light Cyan Foreground */
-    --card: 183 83% 9%; /* Matching Card Background */
+    --card: 190 83% 9%; /* Matching Card Background */
     --card-foreground: 180 10% 98%; /* Card Foreground */
-    --popover: 183 83% 9%; /* Popover Background */
+    --popover: 190 83% 9%; /* Popover Background */
     --popover-foreground: 180 10% 98%; /* Popover Foreground */
     --primary: 190 90% 50%; /* Bright Cyan Primary */
     --primary-foreground: 0 0% 100%; /* White Text on Primary */
@@ -41,7 +41,7 @@
 
 body {
   min-height: 100vh;
-  background: linear-gradient(135deg, hsl(183, 83%, 9%) 0%, hsl(190, 60%, 15%) 100%);
+  background: linear-gradient(135deg, hsl(190, 83%, 9%) 0%, hsl(190, 60%, 15%) 100%);
 }
 
 @layer utilities {
@@ -53,3 +53,4 @@ body {
     @apply bg-gradient-to-br from-cyan-300 via-cyan-200 to-cyan-100 bg-clip-text text-transparent;
   }
 }
+
