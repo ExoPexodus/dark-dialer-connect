@@ -9,7 +9,7 @@ const Index = () => {
         <CallForm />
         
         <footer className="mt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Dark Dialer Connect. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} SIP VoiceBot Integration Demo. All rights reserved.</p>
         </footer>
       </div>
     </div>

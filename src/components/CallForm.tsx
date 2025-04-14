@@ -5,17 +5,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Phone, User, X } from "lucide-react";
+import { Phone, User, X, Bot } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface FormData {
   name: string;
   phoneNumber: string;
+  botType: string;
 }
 
 const CallForm = () => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    phoneNumber: ''
+    phoneNumber: '',
+    botType: ''
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<Partial<FormData>>({});
@@ -32,6 +35,10 @@ const CallForm = () => {
       newErrors.phoneNumber = 'Phone number is required';
     } else if (!phoneRegex.test(formData.phoneNumber)) {
       newErrors.phoneNumber = 'Please enter a valid phone number';
+    }
+    
+    if (!formData.botType) {
+      newErrors.botType = 'Please select a voicebot';
     }
     
     setErrors(newErrors);
@@ -54,6 +61,21 @@ const CallForm = () => {
     }
   };
 
+  const handleBotTypeChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      botType: value
+    }));
+    
+    // Clear error when selecting
+    if (errors.botType) {
+      setErrors(prev => ({
+        ...prev,
+        botType: undefined
+      }));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -66,20 +88,21 @@ const CallForm = () => {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      toast.success(`Calling ${formData.name} at ${formData.phoneNumber}`, {
-        description: "Call initiated successfully",
+      toast.success(`Initiating call with ${formData.botType} to ${formData.phoneNumber}`, {
+        description: `Call initiated by ${formData.name}`,
         position: "top-center",
       });
       
       // You would typically initiate the actual call here
-      console.log('Initiating call to:', formData);
+      console.log('Initiating call with details:', formData);
     }, 1500);
   };
 
   const handleClear = () => {
     setFormData({
       name: '',
-      phoneNumber: ''
+      phoneNumber: '',
+      botType: ''
     });
     setErrors({});
   };
@@ -87,9 +110,9 @@ const CallForm = () => {
   return (
     <Card className="w-full max-w-md bg-secondary/50 border-[0.5px] border-white/10 shadow-xl backdrop-blur-sm">
       <CardHeader className="text-center">
-        <CardTitle className="text-gradient text-3xl font-bold">Dark Dialer</CardTitle>
+        <CardTitle className="text-gradient text-3xl font-bold">SIP VoiceBot Dialer</CardTitle>
         <CardDescription className="text-muted-foreground">
-          Connect with anyone, anytime
+          Connect customers with AI voice agents
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -98,7 +121,7 @@ const CallForm = () => {
             <div className="flex items-center">
               <Label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
                 <User size={16} className="text-primary" />
-                Name
+                Initiator Name
               </Label>
               {errors.name && (
                 <span className="text-xs text-destructive ml-auto flex items-center">
@@ -124,7 +147,7 @@ const CallForm = () => {
             <div className="flex items-center">
               <Label htmlFor="phoneNumber" className="text-sm font-medium flex items-center gap-2">
                 <Phone size={16} className="text-primary" />
-                Phone Number
+                Customer Phone Number
               </Label>
               {errors.phoneNumber && (
                 <span className="text-xs text-destructive ml-auto flex items-center">
@@ -136,7 +159,7 @@ const CallForm = () => {
               <Input
                 id="phoneNumber"
                 name="phoneNumber"
-                placeholder="Enter phone number"
+                placeholder="Enter customer phone number"
                 value={formData.phoneNumber}
                 onChange={handleChange}
                 className={`bg-background/50 border-muted focus:border-primary ${
@@ -144,6 +167,36 @@ const CallForm = () => {
                 }`}
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <Label htmlFor="botType" className="text-sm font-medium flex items-center gap-2">
+                <Bot size={16} className="text-primary" />
+                Voice Agent
+              </Label>
+              {errors.botType && (
+                <span className="text-xs text-destructive ml-auto flex items-center">
+                  <X size={12} className="mr-1" /> {errors.botType}
+                </span>
+              )}
+            </div>
+            <Select
+              value={formData.botType}
+              onValueChange={handleBotTypeChange}
+            >
+              <SelectTrigger 
+                className={`w-full bg-background/50 border-muted focus:border-primary ${
+                  errors.botType ? 'border-destructive' : ''
+                }`}
+              >
+                <SelectValue placeholder="Select a voice agent" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="openai-multimodal-bot">OpenAI Multimodal Bot</SelectItem>
+                <SelectItem value="azure-based-voice-bot">Azure Based Voice Bot</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </form>
       </CardContent>
@@ -159,12 +212,12 @@ const CallForm = () => {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Initiating Call...
+              Connecting Voice Agent...
             </span>
           ) : (
             <span className="flex items-center gap-2">
               <Phone size={18} />
-              Call Now
+              Initiate Voice Call
             </span>
           )}
         </Button>
