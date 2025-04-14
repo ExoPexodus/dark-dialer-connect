@@ -5,25 +5,25 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 262 80% 55%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 262 80% 55%;
+    --background: 183 83% 9%; /* Deep Cyan Background */
+    --foreground: 180 10% 98%; /* Light Cyan Foreground */
+    --card: 183 83% 9%; /* Matching Card Background */
+    --card-foreground: 180 10% 98%; /* Card Foreground */
+    --popover: 183 83% 9%; /* Popover Background */
+    --popover-foreground: 180 10% 98%; /* Popover Foreground */
+    --primary: 190 90% 50%; /* Bright Cyan Primary */
+    --primary-foreground: 0 0% 100%; /* White Text on Primary */
+    --secondary: 190 60% 30%; /* Darker Cyan Secondary */
+    --secondary-foreground: 180 10% 98%; /* Secondary Foreground */
+    --muted: 190 30% 20%; /* Muted Cyan */
+    --muted-foreground: 180 5% 75%; /* Muted Foreground */
+    --accent: 190 60% 40%; /* Accent Cyan */
+    --accent-foreground: 0 0% 100%; /* White Text on Accent */
+    --destructive: 0 84% 60%; /* Keep destructive red */
+    --destructive-foreground: 0 0% 98%; 
+    --border: 190 30% 20%; /* Cyan Border */
+    --input: 190 30% 25%; /* Cyan Input */
+    --ring: 190 90% 50%; /* Bright Cyan Ring */
     --radius: 0.75rem;
   }
 }
@@ -39,37 +39,17 @@
   }
 }
 
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, hsl(183, 83%, 9%) 0%, hsl(190, 60%, 15%) 100%);
+}
+
 @layer utilities {
   .glass-morphism {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.3)];
-  }
-  
-  .neo-blur {
-    @apply backdrop-blur-2xl bg-black/40 border border-white/10;
+    @apply backdrop-blur-xl bg-cyan-500/5 border border-cyan-500/10 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.3)];
   }
   
   .text-gradient {
-    @apply bg-gradient-to-br from-white via-white/90 to-white/70 bg-clip-text text-transparent;
+    @apply bg-gradient-to-br from-cyan-300 via-cyan-200 to-cyan-100 bg-clip-text text-transparent;
   }
-  
-  .pulse-effect {
-    position: relative;
-  }
-  
-  .pulse-effect::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    border-radius: inherit;
-    box-shadow: 0 0 0 rgba(var(--primary), 0.4);
-    animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-  }
-}
-
-body {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #1a1f2c 0%, #2d3748 100%);
 }
