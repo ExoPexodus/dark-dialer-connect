@@ -14,6 +14,13 @@ interface FormData {
   botType: string;
 }
 
+interface BotTypeCommandMap {
+  [key: string]: {
+    command: string;
+    agentName: string;
+  };
+}
+
 const CallForm = () => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -22,6 +29,22 @@ const CallForm = () => {
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<Partial<FormData>>({});
+
+  // Define mapping between bot types and CLI commands
+  const botTypeCommandMap: BotTypeCommandMap = {
+    'openai-multimodal-bot': {
+      command: 'lk dispatch create --new-room --agent-name outbound-multimodel-caller',
+      agentName: 'OpenAI Multimodal Bot'
+    },
+    'openai-multimodal-hindi-bot': {
+      command: 'lk dispatch create --new-room --agent-name outbound-multimodel-hindi-caller',
+      agentName: 'OpenAI Multimodal Bot (Hindi)'
+    },
+    'azure-based-voice-bot': {
+      command: 'lk dispatch create --new-room --agent-name outbound-azure-caller',
+      agentName: 'Azure Based Voice Bot'
+    }
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
@@ -76,6 +99,27 @@ const CallForm = () => {
     }
   };
 
+  const executeCliCommand = (botType: string, phoneNumber: string, name: string) => {
+    const botConfig = botTypeCommandMap[botType];
+    if (!botConfig) return;
+
+    // Construct the metadata JSON
+    const metadata = JSON.stringify({
+      phone_number: phoneNumber,
+      company_name: "Maxicus",
+      candidate_name: name
+    });
+
+    // Construct the full command
+    const fullCommand = `${botConfig.command} --metadata '${metadata}'`;
+    
+    console.log("Executing command:", fullCommand);
+    
+    // In a real implementation, you would use a backend API to execute this command
+    // For now, we'll just simulate it with a console log
+    return fullCommand;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -85,16 +129,27 @@ const CallForm = () => {
     
     setIsLoading(true);
     
+    // Get the command to be executed
+    const command = executeCliCommand(
+      formData.botType,
+      formData.phoneNumber,
+      formData.name
+    );
+    
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      toast.success(`Initiating call with ${formData.botType} to ${formData.phoneNumber}`, {
-        description: `Call initiated by ${formData.name}`,
+      
+      const selectedBotName = botTypeCommandMap[formData.botType]?.agentName || formData.botType;
+      
+      toast.success(`Initiating call with ${selectedBotName} to ${formData.phoneNumber}`, {
+        description: `Call initiated by ${formData.name}. Command: ${command}`,
         position: "top-center",
       });
       
-      // You would typically initiate the actual call here
+      // You would typically initiate the actual call here via an API
       console.log('Initiating call with details:', formData);
+      console.log('CLI Command:', command);
     }, 1500);
   };
 
@@ -194,6 +249,7 @@ const CallForm = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="openai-multimodal-bot">OpenAI Multimodal Bot</SelectItem>
+                <SelectItem value="openai-multimodal-hindi-bot">OpenAI Multimodal Bot (Hindi)</SelectItem>
                 <SelectItem value="azure-based-voice-bot">Azure Based Voice Bot</SelectItem>
               </SelectContent>
             </Select>
