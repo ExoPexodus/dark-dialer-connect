@@ -33,5 +33,5 @@ export const executeCliCommand = (botType: string, phoneNumber: string, name: st
     candidate_name: name
   });
 
-  return `${botConfig.command} --metadata '${metadata}'`;
+  return `${botConfig.command} --metadata '${metadata}' --api-key devkey --api-secret secret`;
 };
