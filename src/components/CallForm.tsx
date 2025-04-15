@@ -1,24 +1,18 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Phone, User, X, Bot } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Phone } from "lucide-react";
+import NameInput from './form/NameInput';
+import PhoneInput from './form/PhoneInput';
+import BotTypeSelect from './form/BotTypeSelect';
+import { botTypeCommandMap, executeCliCommand } from '@/utils/commandExecutor';
 
 interface FormData {
   name: string;
   phoneNumber: string;
   botType: string;
-}
-
-interface BotTypeCommandMap {
-  [key: string]: {
-    command: string;
-    agentName: string;
-  };
 }
 
 const CallForm = () => {
@@ -29,22 +23,6 @@ const CallForm = () => {
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<Partial<FormData>>({});
-
-  // Define mapping between bot types and CLI commands
-  const botTypeCommandMap: BotTypeCommandMap = {
-    'openai-multimodal-bot': {
-      command: 'lk dispatch create --new-room --agent-name outbound-multimodel-caller',
-      agentName: 'OpenAI Multimodal Bot'
-    },
-    'openai-multimodal-hindi-bot': {
-      command: 'lk dispatch create --new-room --agent-name outbound-multimodel-hindi-caller',
-      agentName: 'OpenAI Multimodal Bot (Hindi)'
-    },
-    'azure-based-voice-bot': {
-      command: 'lk dispatch create --new-room --agent-name outbound-azure-caller',
-      agentName: 'Azure Based Voice Bot'
-    }
-  };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
@@ -75,7 +53,6 @@ const CallForm = () => {
       [name]: value
     }));
     
-    // Clear error when typing
     if (errors[name as keyof FormData]) {
       setErrors(prev => ({
         ...prev,
@@ -90,34 +67,12 @@ const CallForm = () => {
       botType: value
     }));
     
-    // Clear error when selecting
     if (errors.botType) {
       setErrors(prev => ({
         ...prev,
         botType: undefined
       }));
     }
-  };
-
-  const executeCliCommand = (botType: string, phoneNumber: string, name: string) => {
-    const botConfig = botTypeCommandMap[botType];
-    if (!botConfig) return;
-
-    // Construct the metadata JSON
-    const metadata = JSON.stringify({
-      phone_number: phoneNumber,
-      company_name: "Maxicus",
-      candidate_name: name
-    });
-
-    // Construct the full command
-    const fullCommand = `${botConfig.command} --metadata '${metadata}'`;
-    
-    console.log("Executing command:", fullCommand);
-    
-    // In a real implementation, you would use a backend API to execute this command
-    // For now, we'll just simulate it with a console log
-    return fullCommand;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -129,14 +84,12 @@ const CallForm = () => {
     
     setIsLoading(true);
     
-    // Get the command to be executed
     const command = executeCliCommand(
       formData.botType,
       formData.phoneNumber,
       formData.name
     );
     
-    // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
       
@@ -147,7 +100,6 @@ const CallForm = () => {
         position: "top-center",
       });
       
-      // You would typically initiate the actual call here via an API
       console.log('Initiating call with details:', formData);
       console.log('CLI Command:', command);
     }, 1500);
@@ -172,88 +124,23 @@ const CallForm = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <Label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
-                <User size={16} className="text-primary" />
-                Initiator Name
-              </Label>
-              {errors.name && (
-                <span className="text-xs text-destructive ml-auto flex items-center">
-                  <X size={12} className="mr-1" /> {errors.name}
-                </span>
-              )}
-            </div>
-            <div className="relative">
-              <Input
-                id="name"
-                name="name"
-                placeholder="Enter your name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`bg-background/50 border-muted focus:border-primary ${
-                  errors.name ? 'border-destructive' : ''
-                }`}
-              />
-            </div>
-          </div>
+          <NameInput 
+            value={formData.name}
+            onChange={handleChange}
+            error={errors.name}
+          />
           
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <Label htmlFor="phoneNumber" className="text-sm font-medium flex items-center gap-2">
-                <Phone size={16} className="text-primary" />
-                Customer Phone Number
-              </Label>
-              {errors.phoneNumber && (
-                <span className="text-xs text-destructive ml-auto flex items-center">
-                  <X size={12} className="mr-1" /> {errors.phoneNumber}
-                </span>
-              )}
-            </div>
-            <div className="relative">
-              <Input
-                id="phoneNumber"
-                name="phoneNumber"
-                placeholder="Enter customer phone number"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                className={`bg-background/50 border-muted focus:border-primary ${
-                  errors.phoneNumber ? 'border-destructive' : ''
-                }`}
-              />
-            </div>
-          </div>
+          <PhoneInput 
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            error={errors.phoneNumber}
+          />
 
-          <div className="space-y-2">
-            <div className="flex items-center">
-              <Label htmlFor="botType" className="text-sm font-medium flex items-center gap-2">
-                <Bot size={16} className="text-primary" />
-                Voice Agent
-              </Label>
-              {errors.botType && (
-                <span className="text-xs text-destructive ml-auto flex items-center">
-                  <X size={12} className="mr-1" /> {errors.botType}
-                </span>
-              )}
-            </div>
-            <Select
-              value={formData.botType}
-              onValueChange={handleBotTypeChange}
-            >
-              <SelectTrigger 
-                className={`w-full bg-background/50 border-muted focus:border-primary ${
-                  errors.botType ? 'border-destructive' : ''
-                }`}
-              >
-                <SelectValue placeholder="Select a voice agent" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="openai-multimodal-bot">OpenAI Multimodal Bot</SelectItem>
-                <SelectItem value="openai-multimodal-hindi-bot">OpenAI Multimodal Bot (Hindi)</SelectItem>
-                <SelectItem value="azure-based-voice-bot">Azure Based Voice Bot</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <BotTypeSelect 
+            value={formData.botType}
+            onChange={handleBotTypeChange}
+            error={errors.botType}
+          />
         </form>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
