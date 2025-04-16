@@ -1,18 +1,31 @@
 
 /**
- * Browser-compatible command execution simulation.
- * This is a mock implementation for browser environments since child_process
- * is not available in browsers.
+ * Execute commands by sending requests to a Flask backend server.
  */
-export const executeCommand = (command: string): Promise<string> => {
-  return new Promise((resolve) => {
-    console.log('[ExecCommand] Simulating command execution in browser:', command);
+export const executeCommand = async (command: string): Promise<string> => {
+  console.log('[ExecCommand] Sending command to Flask backend:', command);
+  
+  try {
+    const response = await fetch('http://localhost:5000/execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ command }),
+    });
     
-    // Simulate a delay to mimic command execution
-    setTimeout(() => {
-      const simulatedOutput = `Command simulation: "${command}" would be executed on a server`;
-      console.log('[ExecCommand] Simulated output:', simulatedOutput);
-      resolve(simulatedOutput);
-    }, 1000);
-  });
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[ExecCommand] API error:', errorText);
+      throw new Error(`API error: ${response.status} ${errorText}`);
+    }
+    
+    const data = await response.json();
+    console.log('[ExecCommand] Command execution response:', data);
+    
+    return data.output;
+  } catch (error) {
+    console.error('[ExecCommand] Error executing command via API:', error);
+    throw error;
+  }
 };
