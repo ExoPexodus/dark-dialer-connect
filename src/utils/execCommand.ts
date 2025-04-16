@@ -1,4 +1,6 @@
 
+import { toast } from "sonner";
+
 /**
  * Execute commands by sending requests to a Flask backend server.
  */
@@ -6,7 +8,7 @@ export const executeCommand = async (command: string): Promise<string> => {
   console.log('[ExecCommand] Sending command to Flask backend:', command);
   
   try {
-    const response = await fetch('http://localhost:5000/execute', {
+    const response = await fetch('http://172.17.52.65:5000/execute', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -26,6 +28,9 @@ export const executeCommand = async (command: string): Promise<string> => {
     return data.output;
   } catch (error) {
     console.error('[ExecCommand] Error executing command via API:', error);
+    toast.error("Failed to connect to backend", {
+      description: error instanceof Error ? error.message : "Unknown connection error"
+    });
     throw error;
   }
 };
