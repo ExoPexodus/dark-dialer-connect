@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +7,7 @@ import NameInput from './form/NameInput';
 import PhoneInput from './form/PhoneInput';
 import BotTypeSelect from './form/BotTypeSelect';
 import { botTypeCommandMap, executeCliCommand } from '@/utils/commandExecutor';
+import { executeCommand } from '@/utils/execCommand';
 
 interface FormData {
   name: string;
@@ -77,7 +77,7 @@ const CallForm = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("[CallForm] Form submission started with data:", formData);
     
@@ -105,25 +105,23 @@ const CallForm = () => {
       
       console.log("[CallForm] Attempting to execute command:", command);
       
-      // Simulating CLI command execution
-      setTimeout(() => {
-        console.log("[CallForm] Command execution completed (simulated)");
-        setIsLoading(false);
-        
-        const selectedBotName = botTypeCommandMap[formData.botType]?.agentName || formData.botType;
-        
-        toast.success(`Initiating call with ${selectedBotName} to ${formData.phoneNumber}`, {
-          description: `Call initiated by ${formData.name}. Command: ${command}`,
-          position: "top-center",
-        });
-        
-        console.log(`[CallForm] Success toast shown for ${selectedBotName}`);
-      }, 1500);
+      const output = await executeCommand(command);
+      console.log("[CallForm] Command execution completed:", output);
+      
+      const selectedBotName = botTypeCommandMap[formData.botType]?.agentName || formData.botType;
+      
+      toast.success(`Initiating call with ${selectedBotName} to ${formData.phoneNumber}`, {
+        description: `Call initiated by ${formData.name}. Output: ${output}`,
+        position: "top-center",
+      });
+      
+      console.log(`[CallForm] Success toast shown for ${selectedBotName}`);
     } catch (error) {
       console.error("[CallForm] Error during command execution:", error);
       toast.error("Failed to initiate call", {
         description: error instanceof Error ? error.message : "Unknown error occurred",
       });
+    } finally {
       setIsLoading(false);
     }
   };
