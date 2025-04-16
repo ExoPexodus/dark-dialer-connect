@@ -1,22 +1,18 @@
 
-import { exec } from 'child_process';
-
+/**
+ * Browser-compatible command execution simulation.
+ * This is a mock implementation for browser environments since child_process
+ * is not available in browsers.
+ */
 export const executeCommand = (command: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      console.log('[ExecCommand] Command output:', stdout);
-      
-      if (error) {
-        console.error('[ExecCommand] Error executing command:', error);
-        reject(error);
-        return;
-      }
-      
-      if (stderr) {
-        console.warn('[ExecCommand] Command stderr:', stderr);
-      }
-      
-      resolve(stdout);
-    });
+  return new Promise((resolve) => {
+    console.log('[ExecCommand] Simulating command execution in browser:', command);
+    
+    // Simulate a delay to mimic command execution
+    setTimeout(() => {
+      const simulatedOutput = `Command simulation: "${command}" would be executed on a server`;
+      console.log('[ExecCommand] Simulated output:', simulatedOutput);
+      resolve(simulatedOutput);
+    }, 1000);
   });
 };

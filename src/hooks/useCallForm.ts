@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { toast } from "sonner";
 import { executeCommand } from '@/utils/execCommand';
@@ -112,7 +111,7 @@ export const useCallForm = () => {
       const selectedBotName = botTypeCommandMap[formData.botType]?.agentName || formData.botType;
       
       toast.success(`Initiating call with ${selectedBotName} to ${formData.phoneNumber}`, {
-        description: `Call initiated by ${formData.name}. Output: ${output}`,
+        description: `Call initiated by ${formData.name}. This is a simulation in the browser environment.`,
         position: "top-center",
       });
       
