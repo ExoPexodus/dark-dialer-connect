@@ -43,6 +43,7 @@ const CallForm = () => {
     }
     
     setErrors(newErrors);
+    console.log("[CallForm] Validation errors:", newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -62,6 +63,7 @@ const CallForm = () => {
   };
 
   const handleBotTypeChange = (value: string) => {
+    console.log("[CallForm] Bot type selected:", value);
     setFormData(prev => ({
       ...prev,
       botType: value
@@ -77,35 +79,57 @@ const CallForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("[CallForm] Form submission started with data:", formData);
     
     if (!validateForm()) {
+      console.log("[CallForm] Form validation failed");
       return;
     }
     
     setIsLoading(true);
+    console.log("[CallForm] Setting loading state to true");
     
-    const command = executeCliCommand(
-      formData.botType,
-      formData.phoneNumber,
-      formData.name
-    );
-    
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const command = executeCliCommand(
+        formData.botType,
+        formData.phoneNumber,
+        formData.name
+      );
       
-      const selectedBotName = botTypeCommandMap[formData.botType]?.agentName || formData.botType;
+      if (!command) {
+        console.error("[CallForm] Failed to generate command");
+        toast.error("Failed to generate command for the selected bot");
+        setIsLoading(false);
+        return;
+      }
       
-      toast.success(`Initiating call with ${selectedBotName} to ${formData.phoneNumber}`, {
-        description: `Call initiated by ${formData.name}. Command: ${command}`,
-        position: "top-center",
+      console.log("[CallForm] Attempting to execute command:", command);
+      
+      // Simulating CLI command execution
+      setTimeout(() => {
+        console.log("[CallForm] Command execution completed (simulated)");
+        setIsLoading(false);
+        
+        const selectedBotName = botTypeCommandMap[formData.botType]?.agentName || formData.botType;
+        
+        toast.success(`Initiating call with ${selectedBotName} to ${formData.phoneNumber}`, {
+          description: `Call initiated by ${formData.name}. Command: ${command}`,
+          position: "top-center",
+        });
+        
+        console.log(`[CallForm] Success toast shown for ${selectedBotName}`);
+      }, 1500);
+    } catch (error) {
+      console.error("[CallForm] Error during command execution:", error);
+      toast.error("Failed to initiate call", {
+        description: error instanceof Error ? error.message : "Unknown error occurred",
       });
-      
-      console.log('Initiating call with details:', formData);
-      console.log('CLI Command:', command);
-    }, 1500);
+      setIsLoading(false);
+    }
   };
 
   const handleClear = () => {
+    console.log("[CallForm] Form cleared");
     setFormData({
       name: '',
       phoneNumber: '',

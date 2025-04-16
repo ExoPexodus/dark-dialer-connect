@@ -24,14 +24,27 @@ export const botTypeCommandMap: BotTypeCommandMap = {
 };
 
 export const executeCliCommand = (botType: string, phoneNumber: string, name: string): string => {
+  console.log(`[CommandExecutor] Executing command for bot type: ${botType}`);
+  
   const botConfig = botTypeCommandMap[botType];
-  if (!botConfig) return '';
+  if (!botConfig) {
+    console.error(`[CommandExecutor] Error: Invalid bot type '${botType}'`);
+    return '';
+  }
 
+  console.log(`[CommandExecutor] Bot config found: ${botConfig.agentName}`);
+  
   const metadata = JSON.stringify({
     phone_number: phoneNumber,
     company_name: "Maxicus",
     candidate_name: name
   });
 
-  return `${botConfig.command} --metadata '${metadata}' --api-key devkey --api-secret secret`;
+  console.log(`[CommandExecutor] Metadata: ${metadata}`);
+  
+  const fullCommand = `${botConfig.command} --metadata '${metadata}' --api-key devkey --api-secret secret`;
+  console.log(`[CommandExecutor] Generated command: ${fullCommand}`);
+  
+  return fullCommand;
 };
+
